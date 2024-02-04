@@ -39,7 +39,7 @@ function editNoteContactsAmoCrm($data) {
                     $data = [
                         'params' => [
                             'entity_id' => intval($lead_id['ID']),
-                            'text' => 'Добавлен новый контакт: ' . (!empty($add_d['name']) ? $add_d['name'] : '')  . " " . $user_info['name']. " " . date_format($date_time, 'H:i:s'),
+                            'text' => 'Добавлен новый контакт: ' . (isset($add_d['name']) && !empty($add_d['name']) ? $add_d['name'] : '')  . " " . $user_info['name']. " " . date_format($date_time, 'H:i:s'),
                             'note_type' => 'common'
                         ]
                     ];
@@ -112,14 +112,16 @@ function editNoteContactsAmoCrm($data) {
                                 $text .= $field['name'] . ': ' . implode(', ', $field['values']). ' ';
                             }
 
+                            $date_time = DateTime::createFromFormat('U', $update_d['last_modified']);
+                            $date_time->setTimezone(new DateTimeZone('Europe/Moscow'));
+
                             $data = [
                                 'params' => [
                                     'entity_id' => intval($lead_id['ID']),
-                                    'text' => 'Изменены поля: '. $text,
+                                    'text' => $new_contact['name'] . ' Изменены поля: '. $text . ' ' . date_format($date_time, 'H:i:s'),
                                     'note_type' => 'common'
                                 ]
                             ];
-
                             sendDataAmoCrm($link, $data);
                         }
                     }
@@ -169,7 +171,7 @@ function editNoteLeadsAmoCrm($data) {
 
             foreach ($update_data as $update_d) {
                 $lead = $connection->query("SELECT data FROM leads WHERE entity_id=" . $update_d['id']);
-
+                
                 if ($lead->num_rows > 0) {
                     $link = 'https://' . SUBDOMAIN . '/api/v4/leads/' . intval($update_d['id']);
                     $new_lead = getDataAmoCrm($link);
@@ -201,10 +203,13 @@ function editNoteLeadsAmoCrm($data) {
                             $text .= $field['name'] . ': ' . $field['values'] . ' ';
                         }
 
+                        $date_time = DateTime::createFromFormat('U', $update_d['last_modified']);
+                        $date_time->setTimezone(new DateTimeZone('Europe/Moscow'));
+
                         $data = [
                             'params' => [
                                 'entity_id' => intval($update_d['id']),
-                                'text' => 'Изменены поля: '. $text,
+                                'text' => $update_d['name'] . ' Изменены поля: '. $text . ' ' . date_format($date_time, 'H:i:s'),
                                 'note_type' => 'common'
                             ]
                         ];
