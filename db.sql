@@ -1,0 +1,23 @@
+CREATE TABLE tokens (
+  id INT NOT NULL AUTO_INCREMENT,
+  client_id  VARCHAR(255) NOT NULL,
+  access_token TEXT NOT NULL,
+  refresh_token TEXT NOT NULL,
+  expires_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE contacts (
+    id INT NOT NULL AUTO_INCREMENT,
+    entity_id VARCHAR(255) NOT NULL,
+    data JSON NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE leads (
+    id INT NOT NULL AUTO_INCREMENT,
+    entity_id VARCHAR(255) NOT NULL,
+    data JSON NOT NULL,
+    PRIMARY KEY (id)
+);
