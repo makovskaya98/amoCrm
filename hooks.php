@@ -17,6 +17,7 @@ if (isset($_POST) && !empty($_POST)) {
 
 function editNoteContactsAmoCrm($data) {
     global $connection;
+
     if (isset($data['add'])) {
         $add_data = $data['add'];
 
@@ -26,7 +27,6 @@ function editNoteContactsAmoCrm($data) {
                 $contact = $connection->query("SELECT data FROM contacts WHERE entity_id=" . $add_d['id']);
 
                 if ($contact->num_rows == 0) {
-
                     $date_time = DateTime::createFromFormat('U', $add_d['date_create']);
                     $date_time->setTimezone(new DateTimeZone('Europe/Moscow'));
 
@@ -59,11 +59,9 @@ function editNoteContactsAmoCrm($data) {
             $update_data = $data['update'];
 
             foreach ($update_data as $update_d) {
-
                 $contact = $connection->query("SELECT data FROM contacts WHERE entity_id=" . $update_d['id']);
 
                 if ($contact->num_rows > 0) {
-
                     $link = 'https://' . SUBDOMAIN . '/api/v4/contacts/' . intval($update_d['id']);
                     $new_contact = getDataAmoCrm($link);
                     $old_contact = json_decode($contact->fetch_assoc()['data'], true);
@@ -186,7 +184,16 @@ function editNoteLeadsAmoCrm($data) {
                         ];
                     }
 
+                    if ($new_lead['price'] != $old_lead['price']) {
+                        $updatedFields[] = [
+                            'name' => 'Цена',
+                            'values' => $new_lead['price']
+                        ];
+                    }
+
                     if (!empty($updatedFields)) {
+                        $connection->query("UPDATE leads SET data = '" . json_encode($new_lead, JSON_UNESCAPED_UNICODE) . "' WHERE entity_id=" . $update_d['id']);
+
                         $link = 'https://' . SUBDOMAIN . '/api/v4/leads/notes';
                         $text = '';
 
